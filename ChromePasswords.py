@@ -1,4 +1,11 @@
-import sqlite3, os, binascii, subprocess, base64, sys, hashlib, glob
+import base64
+import binascii
+import glob
+import hashlib
+import os
+import sqlite3
+import subprocess
+import sys
 
 loginData = glob.glob(
     "%s/Library/Application Support/Google/Chrome/Profile*/Login Data"
