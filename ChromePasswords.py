@@ -24,6 +24,7 @@ safeStorageKey = (
     .replace("\n", "")
     .replace('"', "")
 )
+
 if safeStorageKey == "":
     print("ERROR getting Chrome Safe Storage Key")
     sys.exit()
@@ -71,22 +72,24 @@ def chromeProcess(safeStorageKey, loginData):
     return decryptedList
 
 
-for profile in loginData:
-    for i, x in enumerate(chromeProcess(safeStorageKey, "%s" % profile)):
-        print(
-            "%s[%s]%s %s%s%s\n\t%sUser%s: %s\n\t%sPass%s: %s"
-            % (
-                "\033[32m",
-                (i + 1),
-                "\033[0m",
-                "\033[1m",
-                x[0],
-                "\033[0m",
-                "\033[32m",
-                "\033[0m",
-                x[1],
-                "\033[32m",
-                "\033[0m",
-                x[2],
+if __name__ == "__main__":
+
+    for profile in loginData:
+        for i, x in enumerate(chromeProcess(safeStorageKey, "%s" % profile)):
+            print(
+                "%s[%s]%s %s%s%s\n\t%sUser%s: %s\n\t%sPass%s: %s"
+                % (
+                    "\033[32m",
+                    (i + 1),
+                    "\033[0m",
+                    "\033[1m",
+                    x[0],
+                    "\033[0m",
+                    "\033[32m",
+                    "\033[0m",
+                    x[1],
+                    "\033[32m",
+                    "\033[0m",
+                    x[2],
+                )
             )
-        )
