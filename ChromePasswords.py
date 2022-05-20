@@ -75,9 +75,9 @@ def chromeProcess(safeStorageKey, loginData):
                 continue
             else:
                 urlUserPassDecrypted = (
-                    url.encode("ascii", "ignore"),
-                    user.encode("ascii", "ignore"),
-                    chromeDecrypt(encryptedPass, iv, key=key).decode("ascii", "ignore"),
+                    url,
+                    user,
+                    chromeDecrypt(encryptedPass, iv, key=key),
                 )
                 decryptedList.append(urlUserPassDecrypted)
     return decryptedList
@@ -87,4 +87,4 @@ if __name__ == "__main__":
 
     for profile in loginData:
         for i, x in enumerate(chromeProcess(safeStorageKey, "%s" % profile)):
-            print(f"{i+1} - {x[0]}, {x[1]}, {x[2]}")
+            print(f"{i+1}, {x[0]}, {x[1]}, '{x[2].decode('utf-8')}'")
