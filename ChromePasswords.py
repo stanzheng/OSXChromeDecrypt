@@ -20,12 +20,22 @@ if len(loginData) == 0:
     )  # attempt default profile
 
 
-safeStorageKey = (
-    subprocess.check_output(
-        "security 2>&1 > /dev/null find-generic-password -ga 'Chrome' | awk '{print $2}'",
-        shell=True,
+if os.environ.get("safeStorageKey"):
+    safeStorageKey = os.environ["safeStorageKey"].encode("utf-8")
+else:
+    safeStorageKey = (
+        (
+            subprocess.check_output(
+                "security 2>&1 > /dev/null find-generic-password -ga 'Chrome' | awk '{print $2}'",
+                shell=True,
+            )
+        )
+        .decode("utf-8")
+        .strip("\n")
+        .strip('"')
+        .encode("utf-8")
     )
-)
+
 
 if safeStorageKey == "":
     print("ERROR getting Chrome Safe Storage Key")
@@ -38,11 +48,10 @@ def chromeDecrypt(
     hexKey = binascii.hexlify(key)
     hexEncPassword = base64.b64encode(encrypted_value[3:])
     try:  # send any error messages to /dev/null to prevent screen bloating up
-        decrypted = subprocess.check_output(
-            "openssl enc -base64 -d -aes-128-cbc -iv '%s' -K %s <<< %s 2>/dev/null"
-            % (iv, hexKey, hexEncPassword),
-            shell=True,
+        command = "openssl enc -base64 -d -aes-128-cbc -iv '{}' -K {} <<< {} 2>/dev/null".format(
+            iv, hexKey.decode("utf-8"), hexEncPassword.decode("utf-8")
         )
+        decrypted = subprocess.check_output(command, shell=True)
     except Exception as e:
         decrypted = "ERROR retrieving password"
     return decrypted
@@ -68,7 +77,7 @@ def chromeProcess(safeStorageKey, loginData):
                 urlUserPassDecrypted = (
                     url.encode("ascii", "ignore"),
                     user.encode("ascii", "ignore"),
-                    chromeDecrypt(encryptedPass, iv, key=key).encode("ascii", "ignore"),
+                    chromeDecrypt(encryptedPass, iv, key=key).decode("ascii", "ignore"),
                 )
                 decryptedList.append(urlUserPassDecrypted)
     return decryptedList
